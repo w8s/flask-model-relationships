@@ -30,8 +30,8 @@ class Movie(db.Model):
     def release_year(self):
         return self.release_date.strftime("%Y")
 
-    def actor_list(self):
-        return self.actors.split(',')
+    # def actor_list(self):
+    #     return self.actors.split(',')
 
 
 class Director(db.Model):
@@ -77,19 +77,28 @@ def bootstrap_data():
 
     m = Movie(
             title="Evil Dead",
-            release_date=datetime.strptime("Oct 15 1981", "%b %d %Y"),
-            actors="Bruce Campbell,Ellen Sandweiss,Hal Delrich,Betsy Baker,Sarah York",
+            release_date=datetime.strptime("Oct 15 1981", "%b %d %Y")
         )
 
     db.session.add(m)
     d = Director(first_name="Sam", last_name="Raimi")
-    db.session.add(d)
     m.director = d
-    db.session.add(Actor(first_name="Bruce", last_name="Campbell"))
-    db.session.add(Actor(first_name="Ellen", last_name="Sandweiss"))
-    db.session.add(Actor(first_name="Hal", last_name="Delrich"))
-    db.session.add(Actor(first_name="Betsy", last_name="Baker"))
-    db.session.add(Actor(first_name="Sarah", last_name="York"))
+
+    db.session.add(d)
+
+    bruce = Actor(first_name="Bruce", last_name="Campbell")
+    ellen = Actor(first_name="Ellen", last_name="Sandweiss")
+    hal = Actor(first_name="Hal", last_name="Delrich")
+    betsy = Actor(first_name="Betsy", last_name="Baker")
+    sarah = Actor(first_name="Sarah", last_name="York")
+
+    db.session.add(bruce)
+    db.session.add(ellen)
+    db.session.add(hal)
+    db.session.add(betsy)
+    db.session.add(sarah)
+
+    m.actors.extend((bruce, ellen, hal, betsy, sarah))
 
     db.session.commit()
 
