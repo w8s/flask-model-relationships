@@ -67,17 +67,16 @@ def bootstrap_data():
     db.drop_all()
     db.create_all()
 
-    db.session.add(
-        Movie(
+    m = Movie(
             title="Evil Dead",
-            director="Sam Raimi",
             release_date=datetime.strptime("Oct 15 1981", "%b %d %Y"),
             actors="Bruce Campbell,Ellen Sandweiss,Hal Delrich,Betsy Baker,Sarah York",
         )
-    )
 
-    db.session.add(Director(first_name="Sam", last_name="Raimi"))
-
+    db.session.add(m)
+    d = Director(first_name="Sam", last_name="Raimi")
+    db.session.add(d)
+    m.director = d
     db.session.add(Actor(first_name="Bruce", last_name="Campbell"))
     db.session.add(Actor(first_name="Ellen", last_name="Sandweiss"))
     db.session.add(Actor(first_name="Hal", last_name="Delrich"))
