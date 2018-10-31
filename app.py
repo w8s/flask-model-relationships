@@ -31,7 +31,7 @@ class Director(db.Model):
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
     movies = db.relationship(
-        "Movie", backref="director", lazy="select")
+        "Movie", backref=db.backref("director", lazy="joined"), lazy="select")
 
 # m = Movie(...)
 # m.director.first_name
