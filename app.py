@@ -12,6 +12,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
+actors = db.Table('actors',
+    db.Column('actor_id', db.Integer, db.ForeignKey('actor.id')),
+    db.Column('movie_id', db.Integer, db.ForeignKey('movie.id'))
+)
+
+
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
