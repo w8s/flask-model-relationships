@@ -1,0 +1,89 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+import os
+
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+    app.root_path, "movies.db"
+)
+# Suppress deprecation warning
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+
+class Movie(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    director = db.Column(db.String(80))
+    release_date = db.Column(db.DateTime)
+    actors = db.Column(db.String(255))
+
+    def release_year(self):
+        return self.release_date.strftime("%Y")
+
+    def actor_list(self):
+        return self.actors.split(',')
+
+
+class Director(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(255))
+    last_name = db.Column(db.String(255))
+
+
+class Actor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(255))
+    last_name = db.Column(db.String(255))
+
+
+class GuildMembership(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    guild = db.Column(db.String(255))
+
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+
+@app.cli.command("initdb")
+def reset_db():
+    """Drops and Creates fresh database"""
+    db.drop_all()
+    db.create_all()
+
+    print("Initialized default DB")
+
+
+@app.cli.command("bootstrap")
+def bootstrap_data():
+    """Populates database with data"""
+    db.drop_all()
+    db.create_all()
+
+    db.session.add(
+        Movie(
+            title="Evil Dead",
+            director="Sam Raimi",
+            release_date=datetime.strptime("Oct 15 1981", "%b %d %Y"),
+            actors="Bruce Campbell,Ellen Sandweiss,Hal Delrich,Betsy Baker,Sarah York",
+        )
+    )
+
+    db.session.add(Director(first_name="Sam", last_name="Raimi"))
+
+    db.session.add(Actor(first_name="Bruce", last_name="Campbell"))
+    db.session.add(Actor(first_name="Ellen", last_name="Sandweiss"))
+    db.session.add(Actor(first_name="Hal", last_name="Delrich"))
+    db.session.add(Actor(first_name="Betsy", last_name="Baker"))
+    db.session.add(Actor(first_name="Sarah", last_name="York"))
+
+    db.session.commit()
+
+    print("Added development dataset")
+
+
+if __name__ == "__main__":
+    app.run()
