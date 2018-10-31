@@ -23,7 +23,9 @@ class Movie(db.Model):
     title = db.Column(db.String(255))
     director_id = db.Column(db.Integer, db.ForeignKey('director.id'))
     release_date = db.Column(db.DateTime)
-    actors = db.Column(db.String(255))
+    actors = db.relationship(
+        'Actor', secondary=actors, backref='movies', lazy="select"
+    )
 
     def release_year(self):
         return self.release_date.strftime("%Y")
