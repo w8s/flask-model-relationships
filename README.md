@@ -139,3 +139,15 @@ actor.movies.append(m) # adds related <Movie> object to the list of movies
 movie.actors.append(d) # adds related <Actor> object to the list of actors
 db.session.commit() # persists changed models to the database
 ```
+
+## Running the Code
+
+Using Python 3.7+, run `pip3 install -r requirements.txt` to install the dependencies.
+
+Set the environment variable `FLASK_APP=app.py`.
+
+Commands:
+
+* `flask run`
+* `flask initdb`
+* `flask bootstrap`
