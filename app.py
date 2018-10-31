@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
-    director = db.Column(db.String(80))
+    director_id = db.Column(db.Integer, db.ForeignKey('director.id'))
     release_date = db.Column(db.DateTime)
     actors = db.Column(db.String(255))
 
@@ -30,7 +30,11 @@ class Director(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
+    movies = db.relationship(
+        "Movie", backref="director", lazy="select")
 
+# m = Movie(...)
+# m.director.first_name
 
 class Actor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
