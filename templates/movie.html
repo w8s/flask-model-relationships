@@ -1,0 +1,30 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ movie.title }}</title>
+  </head>
+  <body>
+    <h1>{{ movie.title }}</h1>
+    <ul>
+        <li>{{ movie.director.first_name}} {{ movie.director.last_name }}
+            <ul>
+                {% for m in movie.director.movies %}
+                    {% for a in m.actors %}
+                    <li>{{a.last_name}}: {{ a.guild.guild }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </li>
+        {% for a in movie.actors %}
+        <li>{{ a.first_name }} {{ a.last_name }}
+            <ul>
+            {% for m in a.movies %}
+                <li>{{m.director.last_name}}: {{ m.director.guild.guild }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -67,7 +67,8 @@ class GuildMembership(db.Model):
 
 @app.route("/")
 def hello():
-    return "Hello World!"
+    movie = db.session.query(Movie).first()
+    return render_template('movie.html', movie=movie)
 
 
 @app.cli.command("initdb")
