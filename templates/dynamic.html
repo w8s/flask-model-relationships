@@ -31,11 +31,10 @@
 
         document.getElementById('getMovie1').addEventListener('click',
             function () {
-                makeRequest('GET', '/api/getmovies/', null, function(localReq) {
+                makeRequest('GET', '/api/movies/1', null, function(localReq) {
                 if (localReq.readyState === XMLHttpRequest.DONE) {
                     if (localReq.status >= 200 && localReq.status < 300) {
-                        var movies = JSON.parse(localReq.response);
-                        var m = movies[0]
+                        var m = JSON.parse(localReq.response);
                         console.log(m);
 
                         document.getElementById('title').textContent = m.title;
@@ -49,11 +48,10 @@
 
         document.getElementById('getMovie2').addEventListener('click',
             function () {
-                makeRequest('GET', '/api/getmovies/', null, function(localReq) {
+                makeRequest('GET', '/api/movies/2', null, function(localReq) {
                 if (localReq.readyState === XMLHttpRequest.DONE) {
                     if (localReq.status >= 200 && localReq.status < 300) {
-                        var movies = JSON.parse(localReq.response);
-                        var m = movies[1]
+                        var m = JSON.parse(localReq.response);
                         console.log(m);
 
                         document.getElementById('title').textContent = m.title;

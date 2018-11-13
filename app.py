@@ -83,10 +83,19 @@ def dyn():
     return render_template("dynamic.html")
 
 
-@app.route("/api/getmovies/")
-def get_movies():
+@app.route("/api/movies/")
+def movies_endpoint():
     movies = db.session.query(Movie).all()
     return jsonify([m.to_json() for m in movies])
+
+
+@app.route("/api/movies/<m_id>")
+def movie_endpoint(m_id=None):
+    if m_id:
+        m = db.session.query(Movie).get(m_id)
+        return jsonify(m.to_json())
+    else:
+        return abort(404)
 
 
 @app.cli.command("initdb")
