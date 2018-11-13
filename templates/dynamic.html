@@ -9,28 +9,61 @@
 
 <body>
     <h1 id="title">Movie</h1>
+    <button id="getMovie1">Movie One</button>
+    <button id="getMovie2">Movie Two</button>
     <div id="movie">
 
     </div>
 
     <script>
 
-        var req = new XMLHttpRequest();
+        function makeRequest(method, url, data, callback) {
+            var req = new XMLHttpRequest();
 
-        req.onreadystatechange = function() {
-            if (req.readyState === XMLHttpRequest.DONE) {
-                if (req.status >= 200 && req.status < 300) {
-                    var movies = JSON.parse(req.response);
-                    var m = movies[0];
-                    document.getElementById('title').textContent = m.title;
-                } else if (req.status >= 500) {
-                    console.log("There was a problem on the server.")
-                }
+            req.onreadystatechange = function () {
+                callback(req);
             }
-        }
-        req.open("GET", "/api/getmovies/");
 
-        req.send();
+            req.open(method, url);
+
+            req.send();
+        }
+
+        document.getElementById('getMovie1').addEventListener('click',
+            function () {
+                makeRequest('GET', '/api/getmovies/', null, function(localReq) {
+                if (localReq.readyState === XMLHttpRequest.DONE) {
+                    if (localReq.status >= 200 && localReq.status < 300) {
+                        var movies = JSON.parse(localReq.response);
+                        var m = movies[0]
+                        console.log(m);
+
+                        document.getElementById('title').textContent = m.title;
+                    } else if (localReq.status >= 500) {
+                        console.log("There was a problem on the server.")
+                    }
+                }
+            });
+            }
+        );
+
+        document.getElementById('getMovie2').addEventListener('click',
+            function () {
+                makeRequest('GET', '/api/getmovies/', null, function(localReq) {
+                if (localReq.readyState === XMLHttpRequest.DONE) {
+                    if (localReq.status >= 200 && localReq.status < 300) {
+                        var movies = JSON.parse(localReq.response);
+                        var m = movies[1]
+                        console.log(m);
+
+                        document.getElementById('title').textContent = m.title;
+                    } else if (localReq.status >= 500) {
+                        console.log("There was a problem on the server.")
+                    }
+                }
+            });
+            }
+        );
 
     </script>
 
