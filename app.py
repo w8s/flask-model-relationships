@@ -1,7 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os
+import os, json
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
@@ -29,8 +29,15 @@ class Movie(db.Model):
     def release_year(self):
         return self.release_date.strftime("%Y")
 
-    # def actor_list(self):
-    #     return self.actors.split(',')
+    def to_json(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "director": self.director.last_name,
+            "director_id": self.director.id,
+            "release_date": self.release_date,
+            "actors": [ {"id": a.id, "name": a.last_name} for a in self.actors]
+        }
 
 
 class Director(db.Model):
@@ -68,7 +75,18 @@ class GuildMembership(db.Model):
 @app.route("/")
 def hello():
     movie = db.session.query(Movie).first()
-    return render_template('movie.html', movie=movie)
+    return render_template("movie.html", movie=movie)
+
+
+@app.route("/dyn/")
+def dyn():
+    return render_template("dynamic.html")
+
+
+@app.route("/api/getmovies/")
+def get_movies():
+    movies = db.session.query(Movie).all()
+    return jsonify([m.to_json() for m in movies])
 
 
 @app.cli.command("initdb")
@@ -90,12 +108,38 @@ def bootstrap_data():
         title="Evil Dead", release_date=datetime.strptime("Oct 15 1981", "%b %d %Y")
     )
 
+    m2 = Movie(
+        title="Darkman", release_date=datetime.strptime("Aug 24 1990", "%b %d %Y")
+    )
+
+    m3 = Movie(
+        title="The Quick and the Dead",
+        release_date=datetime.strptime("Feb 10 1995", "%b %d %Y"),
+    )
+
+    m4 = Movie(
+        title="The Gift", release_date=datetime.strptime("Jan 19 2001", "%b %d %Y")
+    )
+
+    m5 = Movie(
+        title="Army of Darkness",
+        release_date=datetime.strptime("Feb 19 1993", "%b %d %Y"),
+    )
+
     db.session.add(m)
+    db.session.add(m2)
+    db.session.add(m3)
+    db.session.add(m4)
+    db.session.add(m5)
+
     d = Director(
         first_name="Sam", last_name="Raimi", guild=GuildMembership(guild="Raimi DGA")
     )
     m.director = d
-
+    m2.director = d
+    m3.director = d
+    m4.director = d
+    m5.director = d
     db.session.add(d)
 
     bruce = Actor(
@@ -120,13 +164,55 @@ def bootstrap_data():
         first_name="Sarah", last_name="York", guild=GuildMembership(guild="York SAG")
     )
 
+    # darkman actors
+    liam = Actor(
+        first_name="Liam", last_name="Neeson", guild=GuildMembership(guild="Neeson SAG")
+    )
+    frances = Actor(
+        first_name="Frances",
+        last_name="McDormand",
+        guild=GuildMembership(guild="McDormand SAG"),
+    )
+
+    # Quick and the Dead Actors
+    sharon = Actor(
+        first_name="Sharon", last_name="Stone", guild=GuildMembership(guild="Stone Sag")
+    )
+    gene = Actor(
+        first_name="Gene",
+        last_name="Hackman",
+        guild=GuildMembership(guild="Hackman Sag"),
+    )
+
+    # The Gift Actors
+    cate = Actor(
+        first_name="Cate",
+        last_name="Blanchett",
+        guild=GuildMembership(guild="Blanchett Sag"),
+    )
+    keanu = Actor(
+        first_name="Keanu",
+        last_name="Reeves",
+        guild=GuildMembership(guild="Reeves Sag"),
+    )
+
     db.session.add(bruce)
     db.session.add(ellen)
     db.session.add(hal)
     db.session.add(betsy)
     db.session.add(sarah)
+    db.session.add(liam)
+    db.session.add(frances)
+    db.session.add(sharon)
+    db.session.add(gene)
+    db.session.add(cate)
+    db.session.add(keanu)
 
     m.actors.extend((bruce, ellen, hal, betsy, sarah))
+    m2.actors.extend((bruce, liam, frances))
+    m3.actors.extend((bruce, sharon, gene))
+    m4.actors.extend((bruce, cate, keanu))
+    m5.actors.append(bruce)
 
     db.session.commit()
 

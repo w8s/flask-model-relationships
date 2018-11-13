@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Movie Page</title>
+</head>
+
+<body>
+    <h1 id="title">Movie</h1>
+    <div id="movie">
+
+    </div>
+
+    <script>
+
+        var req = new XMLHttpRequest();
+
+        req.onreadystatechange = function() {
+            if (req.readyState === XMLHttpRequest.DONE) {
+                if (req.status >= 200 && req.status < 300) {
+                    var movies = JSON.parse(req.response);
+                    var m = movies[0];
+                    document.getElementById('title').textContent = m.title;
+                } else if (req.status >= 500) {
+                    console.log("There was a problem on the server.")
+                }
+            }
+        }
+        req.open("GET", "/api/getmovies/");
+
+        req.send();
+
+    </script>
+
+</body>
+
+</html>
