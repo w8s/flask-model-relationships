@@ -30,13 +30,14 @@ class Movie(db.Model):
         return self.release_date.strftime("%Y")
 
     def to_json(self):
+
         return {
             "id": self.id,
             "title": self.title,
-            "director": self.director.last_name,
-            "director_id": self.director.id,
-            "release_date": self.release_date,
-            "actors": [ {"id": a.id, "name": a.last_name} for a in self.actors]
+            "director": self.director.last_name if self.director else None,
+            "director_id": self.director.id if self.director else None,
+            "release_date": self.release_date if self.release_date else None,
+            "actors": [ {"id": a.id, "name": a.last_name} for a in self.actors] if self.actors else None
         }
 
 
@@ -83,10 +84,16 @@ def dyn():
     return render_template("dynamic.html")
 
 
-@app.route("/api/movies/")
+@app.route("/api/movies/", methods=['GET', 'POST'])
 def movies_endpoint():
-    movies = db.session.query(Movie).all()
-    return jsonify([m.to_json() for m in movies])
+    if request.method == 'POST':
+        m = Movie(title=request.form['title'])
+        db.session.add(m)
+        db.session.commit()
+        return jsonify(m.to_json()), 201
+    else:
+        movies = db.session.query(Movie).all()
+        return jsonify([m.to_json() for m in movies])
 
 
 @app.route("/api/movies/<m_id>")

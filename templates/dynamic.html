@@ -10,7 +10,7 @@
 <body>
     <h1 id="title">Movie</h1>
     <button id="getMovie1">Movie One</button>
-    <button id="getMovie2">Movie Two</button>
+    <button id="makemovie">Make Spider-Man</button>
     <div id="movie">
 
     </div>
@@ -26,7 +26,12 @@
 
             req.open(method, url);
 
-            req.send();
+            if (data) {
+                req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                req.send(data);
+            } else {
+                req.send();
+            }
         }
 
         document.getElementById('getMovie1').addEventListener('click',
@@ -46,9 +51,9 @@
             }
         );
 
-        document.getElementById('getMovie2').addEventListener('click',
+        document.getElementById('makemovie').addEventListener('click',
             function () {
-                makeRequest('GET', '/api/movies/2', null, function(localReq) {
+                makeRequest('POST', '/api/movies/', "title=Spider-Man", function(localReq) {
                 if (localReq.readyState === XMLHttpRequest.DONE) {
                     if (localReq.status >= 200 && localReq.status < 300) {
                         var m = JSON.parse(localReq.response);
